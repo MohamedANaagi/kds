@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../Colors/colors.dart';
 
-
 class DiagnosticsPage extends StatelessWidget {
   const DiagnosticsPage({super.key});
 
@@ -11,33 +10,55 @@ class DiagnosticsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor.mainColor,
-        title: Text('Diagnostics Page',style:TextStyle(color: AppColor.TextColor) ,),
+        title: Text(
+          'Diagnostics Page',
+          style: TextStyle(color: AppColor.TextColor),
+        ),
       ),
       body: Column(
         children: [
-
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                ElevatedButton(
-
-                  onPressed: () {
-                  },
-                  child: Text('Download Data',style: TextStyle(fontSize: 25,),),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColor.x,
+                      padding: EdgeInsets.symmetric(vertical: 25), // حذف horizontal لتوزيع العرض بالتساوي
+                    ),
+                    child: Text(
+                      'Download Data',
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
-                ElevatedButton(
-
-                  onPressed: () {
-
-                  },
-                  child: Text('Send Diagnostics',style: TextStyle(fontSize: 25,),),
+                SizedBox(width: 20), // المسافة بين الأزرار
+                // زر Send Diagnostics
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColor.x,
+                      padding: EdgeInsets.symmetric(vertical: 25), // فقط التحكم في الارتفاع
+                    ),
+                    child: Text(
+                      'Send Diagnostics',
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-
           Expanded(
             child: ListView(
               padding: EdgeInsets.all(16.0),

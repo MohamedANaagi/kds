@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../Colors/colors.dart';
 import '../custom_Icon_button.dart';
+import '../custom_alert_Dialog.dart';
 import '../custom_button.dart';
 import '../number_title_row.dart';
 
@@ -147,20 +148,39 @@ class HistoryButton extends StatelessWidget {
                                 ),
                               )),
                           CustomButton(
-                              title: "Recall",
-                              onPressed: () {
-                                Navigator.pop(context);
-                              })
+                            title: "Recall",
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return CustomAlertDialog(
+                                    title: "Bumb All",
+                                    content: "Are you Sure you want to Bumb all Your Orders?",
+                                    cancelText: "Cancel",
+                                    confirmText: "Bumb",
+                                    onCancel: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    onConfirm: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+
                         ],
                       )),
                   Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+
                           children: [
                             Row(
+
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
@@ -181,6 +201,12 @@ class HistoryButton extends StatelessWidget {
                                       fontWeight: FontWeight.bold),
                                 ),
                               ],
+                            ),
+                            Divider(
+                              color: Colors.grey,
+                              thickness: 1.0,
+                              indent: 20.0,
+                              endIndent: 20.0,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -217,3 +243,6 @@ class HistoryButton extends StatelessWidget {
     );
   }
 }
+
+
+
