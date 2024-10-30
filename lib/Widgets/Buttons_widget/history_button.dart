@@ -1,3 +1,4 @@
+import 'package:cashier_app/Widgets/history_item.dart';
 import 'package:flutter/material.dart';
 
 import '../../Colors/colors.dart';
@@ -176,62 +177,13 @@ class HistoryButton extends StatelessWidget {
                   Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
-                        child: Column(
+                        child:ListView.builder(itemBuilder: (context,index)
+                            =>HistoryItem(number: index,onTap:(){
 
-                          children: [
-                            Row(
 
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  "سلطه خضرا",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  " 5 x",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              color: Colors.grey,
-                              thickness: 1.0,
-                              indent: 20.0,
-                              endIndent: 20.0,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  " مشاوي",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  " 5 x",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+
+                            } ,)
+                        ) ,
                       )),
                 ],
               )
