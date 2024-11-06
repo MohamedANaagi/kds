@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:cashier_app/Colors/colors.dart';
+import 'package:cashier_app/Screens/history_test.dart';
 import 'package:cashier_app/Widgets/custom_button.dart';
 import 'package:cashier_app/Widgets/order_row.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 import '../database/database_helper.dart';
+import '../models/history_model.dart';
 import '../models/orders.dart';
 
 class OrderBody extends StatefulWidget {
@@ -37,6 +40,7 @@ class _OrderBodyState extends State<OrderBody> {
   }
 
   // تحميل الملف مع التحقق من أن الملف جديد
+  // تحميل الملف مع التحقق من أن الملف جديد
   Future<void> loadOrderFromCashier() async {
     try {
       final response = await dio.get('http://$cashierIp:8080/file');
@@ -50,10 +54,11 @@ class _OrderBodyState extends State<OrderBody> {
         if (newFileName != null && newFileName != lastFileName) {
           lastFileName = newFileName;
 
+          // تأكد من أن البيانات على شكل Map
           final Map<String, dynamic> jsonData = response.data;
 
           setState(() {
-            orders.add(Order.fromJson(jsonData));
+            orders.add(Order.fromMap(jsonData));
           });
           showSnackbar("Order added successfully!");
         }
@@ -65,16 +70,34 @@ class _OrderBodyState extends State<OrderBody> {
     }
   }
 
-  // دالة لحذف order وإدخاله في قاعدة البيانات
+
+
+  // تعديل bumpOrder لحفظ `HistoryModel` في قاعدة البيانات
   Future<void> bumpOrder(int index) async {
     final order = orders[index];
 
-    await dbHelper.insertOrder(order); // حفظ الطلب في قاعدة البيانات
-    setState(() {
-      orders.removeAt(index); // حذف الطلب من القائمة
+    // تحويل الطلب إلى HistoryModel
+    final historyOrder = HistoryModel(
+      id: order.id,
+      serial: order.serial,
+      type: order.type,
+      createdAt: order.createdAt.toIso8601String(),
+      orders: jsonEncode(order.orders.map((item) => item.toMap()).toList()), // تحويل القائمة إلى JSON
+    );
+
+    // التأكد من إضافة الطلب إلى قاعدة البيانات
+    await dbHelper.insertHistoryOrder(historyOrder).then((_) {
+      setState(() {
+        orders.removeAt(index); // حذف الطلب من القائمة بعد الحفظ
+      });
+      showSnackbar("Order bumped and saved to history!");
+    }).catchError((e) {
+      showSnackbar("Error saving order to database: $e");
+      print("Error saving order to database: $e"); // عرض الخطأ في debug console
     });
-    showSnackbar("Order bumped and saved to history!");
   }
+
+
 
   // دالة لعرض Snackbar
   void showSnackbar(String message) {
@@ -163,6 +186,7 @@ class _OrderBodyState extends State<OrderBody> {
                   title: "Bump",
                   onPressed: () async {
                     await bumpOrder(index);
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>HistoryScreen(),),);
                   },
                 ),
               ],

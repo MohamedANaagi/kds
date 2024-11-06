@@ -1,9 +1,7 @@
-
-
 import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
+import '../models/history_model.dart';
 
-import '../models/orders.dart';
 
 class HistoryScreen extends StatefulWidget {
   @override
@@ -11,7 +9,7 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  List<Order> historyOrders = [];
+  List<HistoryModel> historyOrders = [];
   final DatabaseHelper dbHelper = DatabaseHelper();
 
   @override
@@ -21,7 +19,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> loadHistoryOrders() async {
-    final orders = await dbHelper.getOrders();
+    final orders = await dbHelper.getHistoryOrders();
     setState(() {
       historyOrders = orders;
     });
@@ -37,7 +35,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           final order = historyOrders[index];
           return ListTile(
             title: Text("Order ${order.serial} - ${order.createdAt}"),
-            subtitle: Text("Total Price: ${order.price}, Tax: ${order.tax}"),
+            subtitle: Text("Type: ${order.type}"),
           );
         },
       ),

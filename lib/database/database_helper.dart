@@ -1,6 +1,15 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../models/orders.dart';
+
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+import '../models/history_model.dart';
+
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -19,37 +28,59 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'orders_database.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // زيادة النسخة
       onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE orders(
-            id INTEGER PRIMARY KEY,
-            serial TEXT,
-            status INTEGER,
-            type INTEGER,
-            notes TEXT,
-            price REAL,
-            tax REAL,
-            discount REAL,
-            createdAt TEXT
-          )
-        ''');
+        await _createTables(db);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await _createTables(db); // إنشاء الجدول إذا لم يكن موجودًا
+        }
       },
     );
   }
 
-  Future<void> insertOrder(Order order) async {
-    final db = await database;
-    await db.insert(
-      'orders',
-      order.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+  Future<void> _createTables(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS history_orders(
+        id INTEGER PRIMARY KEY,
+        serial TEXT,
+        type INTEGER,
+        createdAt TEXT,
+        orders TEXT
+      )
+    ''');
   }
 
-  Future<List<Order>> getOrders() async {
+  Future<void> insertHistoryOrder(HistoryModel order) async {
+    try {
+      final db = await database;
+      await db.insert(
+        'history_orders',
+        order.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      print("Error saving order to database: $e");
+    }
+  }
+
+  Future<List<HistoryModel>> getHistoryOrders() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('orders');
-    return List.generate(maps.length, (i) => Order.fromJson(maps[i]));
+    final List<Map<String, dynamic>> maps = await db.query('history_orders');
+
+    return List.generate(maps.length, (i) {
+      return HistoryModel.fromMap(maps[i]);
+    });
   }
 }
+
+Future<void> initializeDatabase() async {
+  final dbHelper = DatabaseHelper();
+  await dbHelper.database; // تأكد من إنشاء قاعدة البيانات
+}
+
+/////////////////////////////////
+
+
+

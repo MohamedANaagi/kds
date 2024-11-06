@@ -5,12 +5,15 @@ import 'package:provider/provider.dart';
 import 'Screens/Login/login_screen.dart';
 import 'Screens/main_screen.dart';
 import 'Widgets/provider.dart';
+import 'database/database_helper.dart';
 
 
 
 
 
-void main() {
+void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDatabase();
   runApp(
     MultiProvider(
       providers: [
