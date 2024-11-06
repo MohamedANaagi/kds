@@ -49,7 +49,7 @@ class NumberTitleRow extends StatelessWidget {
 }
 
 class OrderRow extends StatelessWidget {
-  final int number;
+  final String number;
   final String title;
   final Color textColor;
   final Color backgroundColor;

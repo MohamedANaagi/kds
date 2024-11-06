@@ -1,15 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-
-
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-
 import '../models/history_model.dart';
+import 'dart:convert';
 
+import '../models/orders.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -28,7 +23,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'orders_database.db');
     return await openDatabase(
       path,
-      version: 2, // زيادة النسخة
+      version: 2,
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -57,7 +52,10 @@ class DatabaseHelper {
       final db = await database;
       await db.insert(
         'history_orders',
-        order.toMap(),
+        {
+          ...order.toMap(),
+          'orders': jsonEncode(order.orders.map((item) => item.toMap()).toList()) // Save orders as JSON string
+        },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
@@ -70,17 +68,21 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.query('history_orders');
 
     return List.generate(maps.length, (i) {
-      return HistoryModel.fromMap(maps[i]);
+      return HistoryModel(
+        id: maps[i]['id'],
+        serial: maps[i]['serial'],
+        type: maps[i]['type'],
+        createdAt: maps[i]['createdAt'],
+        orders: (jsonDecode(maps[i]['orders']) as List<dynamic>)
+            .map((item) => OrderItem.fromMap(item))
+            .toList(),
+      );
     });
   }
 }
+
 
 Future<void> initializeDatabase() async {
   final dbHelper = DatabaseHelper();
   await dbHelper.database;
 }
-
-/////////////////////////////////
-
-
-

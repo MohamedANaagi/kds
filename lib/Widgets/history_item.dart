@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HistoryItem extends StatelessWidget {
-  final int number;
+  final String number;
   final Function()? onTap;
   const HistoryItem({super.key, required this.number, this.onTap});
 

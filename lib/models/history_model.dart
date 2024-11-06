@@ -1,11 +1,12 @@
-
+import 'dart:convert';
+import 'orders.dart'; // Adjust the import path
 
 class HistoryModel {
   final int id;
   final String serial;
   final int type;
   final String createdAt;
-  final String orders;
+  List<OrderItem> orders;
 
   HistoryModel({
     required this.id,
@@ -15,17 +16,15 @@ class HistoryModel {
     required this.orders,
   });
 
-
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'serial': serial,
       'type': type,
       'createdAt': createdAt,
-      'orders': orders,
+      'orders': jsonEncode(orders.map((item) => item.toMap()).toList()), // Convert orders to JSON string
     };
   }
-
 
   factory HistoryModel.fromMap(Map<String, dynamic> map) {
     return HistoryModel(
@@ -33,7 +32,9 @@ class HistoryModel {
       serial: map['serial'],
       type: map['type'],
       createdAt: map['createdAt'],
-      orders: map['orders'],
+      orders: (jsonDecode(map['orders']) as List)
+          .map((item) => OrderItem.fromMap(item))
+          .toList(),
     );
   }
 }

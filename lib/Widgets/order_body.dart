@@ -33,7 +33,7 @@ class _OrderBodyState extends State<OrderBody> {
   }
 
   void startPolling() {
-    timer = Timer.periodic(Duration(seconds: 60), (timer) {
+    timer = Timer.periodic(Duration(milliseconds: 20), (timer) {
       loadOrderFromCashier();
     });
   }
@@ -63,7 +63,8 @@ class _OrderBodyState extends State<OrderBody> {
         }
       }
     } on DioError catch (_) {
-      showSnackbar("Network error: Unable to connect to cashier.");
+    null  ;
+      // showSnackbar("Network error: Unable to connect to cashier.")
     } catch (e) {
       showSnackbar("Error processing data: $e");
     }
@@ -77,7 +78,7 @@ class _OrderBodyState extends State<OrderBody> {
       serial: order.serial,
       type: order.type,
       createdAt: order.createdAt.toIso8601String(),
-      orders: jsonEncode(order.orders.map((item) => item.toMap()).toList()),
+      orders: order.orders, // Pass List<OrderItem> directly
     );
 
     await dbHelper.insertHistoryOrder(historyOrder).then((_) {
@@ -90,6 +91,7 @@ class _OrderBodyState extends State<OrderBody> {
       print("Error saving order to database: $e");
     });
   }
+
 
   void showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
