@@ -1,3 +1,4 @@
+import 'package:cashier_app/Colors/colors.dart';
 import 'package:flutter/material.dart';
 
 class OrderRow extends StatelessWidget {
@@ -44,7 +45,7 @@ class OrderRow extends StatelessWidget {
             right: 0,
             child: Container(
               width: 10,
-              color: Colors.orange,
+              color: AppColor.x,
             ),
           ),
         ],
