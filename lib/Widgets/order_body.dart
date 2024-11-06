@@ -21,10 +21,10 @@ class OrderBody extends StatefulWidget {
 class _OrderBodyState extends State<OrderBody> {
   List<Order> orders = [];
   final dio = Dio();
-  final String cashierIp = "192.168.1.203"; // عنوان IP لجهاز الكاشير
+  final String cashierIp = "192.168.1.203";
   Timer? timer;
   String? lastFileName;
-  final DatabaseHelper dbHelper = DatabaseHelper(); // كائن قاعدة البيانات
+  final DatabaseHelper dbHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -32,29 +32,28 @@ class _OrderBodyState extends State<OrderBody> {
     startPolling();
   }
 
-  // بدء التحقق الدوري دون إلغاء التكرار
   void startPolling() {
     timer = Timer.periodic(Duration(seconds: 60), (timer) {
       loadOrderFromCashier();
     });
   }
 
-  // تحميل الملف مع التحقق من أن الملف جديد
-  // تحميل الملف مع التحقق من أن الملف جديد
   Future<void> loadOrderFromCashier() async {
     try {
       final response = await dio.get('http://$cashierIp:8080/file');
 
       if (response.statusCode == 200 && response.data != null) {
-        final newFileName = response.headers['content-disposition']?.firstWhere(
+        final newFileName = response.headers['content-disposition']
+            ?.firstWhere(
               (header) => header.contains('filename='),
-          orElse: () => '',
-        )?.split('filename=')[1]?.replaceAll('"', '');
+              orElse: () => '',
+            )
+            ?.split('filename=')[1]
+            ?.replaceAll('"', '');
 
         if (newFileName != null && newFileName != lastFileName) {
           lastFileName = newFileName;
 
-          // تأكد من أن البيانات على شكل Map
           final Map<String, dynamic> jsonData = response.data;
 
           setState(() {
@@ -70,36 +69,28 @@ class _OrderBodyState extends State<OrderBody> {
     }
   }
 
-
-
-  // تعديل bumpOrder لحفظ `HistoryModel` في قاعدة البيانات
   Future<void> bumpOrder(int index) async {
     final order = orders[index];
 
-    // تحويل الطلب إلى HistoryModel
     final historyOrder = HistoryModel(
       id: order.id,
       serial: order.serial,
       type: order.type,
       createdAt: order.createdAt.toIso8601String(),
-      orders: jsonEncode(order.orders.map((item) => item.toMap()).toList()), // تحويل القائمة إلى JSON
+      orders: jsonEncode(order.orders.map((item) => item.toMap()).toList()),
     );
 
-    // التأكد من إضافة الطلب إلى قاعدة البيانات
     await dbHelper.insertHistoryOrder(historyOrder).then((_) {
       setState(() {
-        orders.removeAt(index); // حذف الطلب من القائمة بعد الحفظ
+        orders.removeAt(index);
       });
       showSnackbar("Order bumped and saved to history!");
     }).catchError((e) {
       showSnackbar("Error saving order to database: $e");
-      print("Error saving order to database: $e"); // عرض الخطأ في debug console
+      print("Error saving order to database: $e");
     });
   }
 
-
-
-  // دالة لعرض Snackbar
   void showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -136,19 +127,29 @@ class _OrderBodyState extends State<OrderBody> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             CustomText(
-                              text: order.createdAt.toIso8601String().substring(11, 16), // استخراج الوقت فقط
+                              text: order.createdAt
+                                  .toIso8601String()
+                                  .substring(11, 16),
                               colorindex: 0,
                             ),
-                            CustomText(text: "Done (#${order.id})", colorindex: 0,),
+                            CustomText(
+                              text: "Done (#${order.id})",
+                              colorindex: 0,
+                            ),
                           ],
                         ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CustomText(text: "Serial: ${order.serial}", colorindex: 1,),
                           CustomText(
-                            text: order.createdAt.toIso8601String().substring(11, 16),
+                            text: "Serial: ${order.serial}",
+                            colorindex: 1,
+                          ),
+                          CustomText(
+                            text: order.createdAt
+                                .toIso8601String()
+                                .substring(11, 16),
                             colorindex: 1,
                           ),
                         ],
@@ -156,8 +157,14 @@ class _OrderBodyState extends State<OrderBody> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CustomText(text: " Cashier ID: ${order.id}", colorindex: 1,),
-                          CustomText(text: "Type: ${order.type}", colorindex: 1,),
+                          CustomText(
+                            text: " Cashier ID: ${order.id}",
+                            colorindex: 1,
+                          ),
+                          CustomText(
+                            text: "Type: ${order.type}",
+                            colorindex: 1,
+                          ),
                         ],
                       ),
                     ],
@@ -175,7 +182,8 @@ class _OrderBodyState extends State<OrderBody> {
                         itemBuilder: (context, productIndex) {
                           OrderItem orderItem = order.orders[productIndex];
                           Product product = orderItem.product;
-                          return OrderRow(number: productIndex + 1, title: product.name);
+                          return OrderRow(
+                              number: productIndex + 1, title: product.name);
                         },
                       ),
                     ),
@@ -186,7 +194,12 @@ class _OrderBodyState extends State<OrderBody> {
                   title: "Bump",
                   onPressed: () async {
                     await bumpOrder(index);
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>HistoryScreen(),),);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HistoryScreen(),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -201,7 +214,8 @@ class _OrderBodyState extends State<OrderBody> {
 class CustomText extends StatelessWidget {
   final int colorindex;
   final String text;
-  const CustomText({Key? key, required this.text, required this.colorindex}) : super(key: key);
+  const CustomText({Key? key, required this.text, required this.colorindex})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +225,9 @@ class CustomText extends StatelessWidget {
         text,
         overflow: TextOverflow.fade,
         maxLines: 1,
-        style: TextStyle(color: colorindex == 0 ? Colors.white : Colors.black87, fontSize: 20),
+        style: TextStyle(
+            color: colorindex == 0 ? Colors.white : Colors.black87,
+            fontSize: 20),
       ),
     );
   }

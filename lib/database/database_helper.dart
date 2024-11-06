@@ -34,7 +34,7 @@ class DatabaseHelper {
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
-          await _createTables(db); // إنشاء الجدول إذا لم يكن موجودًا
+          await _createTables(db);
         }
       },
     );
@@ -77,7 +77,7 @@ class DatabaseHelper {
 
 Future<void> initializeDatabase() async {
   final dbHelper = DatabaseHelper();
-  await dbHelper.database; // تأكد من إنشاء قاعدة البيانات
+  await dbHelper.database;
 }
 
 /////////////////////////////////

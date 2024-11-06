@@ -15,7 +15,7 @@ class HistoryModel {
     required this.orders,
   });
 
-  // لتحويل البيانات إلى خريطة عند الحفظ في قاعدة البيانات
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -26,7 +26,7 @@ class HistoryModel {
     };
   }
 
-  // لتحويل البيانات من قاعدة البيانات إلى كائن HistoryModel
+
   factory HistoryModel.fromMap(Map<String, dynamic> map) {
     return HistoryModel(
       id: map['id'],
