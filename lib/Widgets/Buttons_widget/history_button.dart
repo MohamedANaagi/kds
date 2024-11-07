@@ -1,7 +1,7 @@
 import 'dart:convert'; // Import for jsonDecode
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../Colors/colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cubit/order_selection_cubit.dart';
 import '../../database/database_helper.dart';
 import '../../models/history_model.dart';
 import '../custom_Icon_button.dart';
@@ -9,7 +9,6 @@ import '../custom_alert_Dialog.dart';
 import '../custom_button.dart';
 import '../history_item.dart';
 import '../order_row.dart';
-import '../provider.dart';
 
 class HistoryButton extends StatefulWidget {
   const HistoryButton({super.key});
@@ -48,20 +47,31 @@ class _HistoryButtonState extends State<HistoryButton> {
         Container(
           height: MediaQuery.of(context).size.height * 0.76,
           width: MediaQuery.of(context).size.width * 0.6,
-          child: Row(
+          child: historyOrders.isEmpty
+              ? Center(
+            child: Text(
+              "No orders available. Database is empty.",
+              style: TextStyle(fontSize: 18, color: Colors.black54),
+            ),
+          )
+              : Row(
             children: [
               // الجانب الأيسر لعرض تفاصيل الطلب
               Expanded(
-                child: Consumer<ValueProvider>(
-                  builder: (context, valueProvider, child) {
-                    final selectedOrderId = valueProvider.value;
+                child: BlocBuilder<OrderSelectionCubit, int?>(
+                  builder: (context, selectedOrderId) {
                     selectedOrder = historyOrders.firstWhere(
                           (order) => order.id == selectedOrderId,
                       orElse: () => historyOrders.isNotEmpty
                           ? historyOrders.first
-                          : HistoryModel(id: 0, serial: "N/A", type: 0, createdAt: "N/A", orders: []),
+                          : HistoryModel(
+                        id: 0,
+                        serial: "N/A",
+                        type: 0,
+                        createdAt: "N/A",
+                        orders: [],
+                      ),
                     );
-
 
                     return selectedOrder != null
                         ? Column(
@@ -73,10 +83,12 @@ class _HistoryButtonState extends State<HistoryButton> {
                                 color: Color(0xFF95A5A5),
                                 child: Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment
+                                      .spaceBetween,
                                   children: [
                                     Text(
-                                      selectedOrder!.createdAt.substring(11, 16),
+                                      selectedOrder!.createdAt
+                                          .substring(11, 16),
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 20),
@@ -116,13 +128,15 @@ class _HistoryButtonState extends State<HistoryButton> {
                           child: SingleChildScrollView(
                             child: Column(
                               children: selectedOrder!.orders
-                                  .map((orderItem) => OrderRow(
-                                number: orderItem.quantity,
-                                title: orderItem.product.name,
-                                backgroundColor:
-                                Colors.transparent,
-                                textColor: Colors.grey,
-                              ))
+                                  .map(
+                                    (orderItem) => OrderRow(
+                                  number: orderItem.quantity,
+                                  title: orderItem.product.name,
+                                  backgroundColor:
+                                  Colors.transparent,
+                                  textColor: Colors.grey,
+                                ),
+                              )
                                   .toList(),
                             ),
                           ),
@@ -171,8 +185,9 @@ class _HistoryButtonState extends State<HistoryButton> {
                       return HistoryItem(
                         number: order.id.toString(),
                         onTap: () {
-                          Provider.of<ValueProvider>(context, listen: false)
-                              .setValue(order.id);
+                          context
+                              .read<OrderSelectionCubit>()
+                              .selectOrder(order.id);
                         },
                       );
                     },

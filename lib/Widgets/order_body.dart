@@ -12,8 +12,13 @@ import '../models/history_model.dart';
 import '../models/orders.dart';
 
 class OrderBody extends StatefulWidget {
-  const OrderBody({Key? key}) : super(key: key);
 
+  final ValueNotifier<int> dineInCount;
+  final ValueNotifier<int> pickupCount;
+  final ValueNotifier<int> deliveryCount;
+  final ValueNotifier<int> driveThruCount;
+
+  const OrderBody({Key? key, required this.dineInCount, required this.pickupCount, required this.deliveryCount, required this.driveThruCount}) : super(key: key);
   @override
   _OrderBodyState createState() => _OrderBodyState();
 }
@@ -46,8 +51,8 @@ class _OrderBodyState extends State<OrderBody> {
         final newFileName = response.headers['content-disposition']
             ?.firstWhere(
               (header) => header.contains('filename='),
-              orElse: () => '',
-            )
+          orElse: () => '',
+        )
             ?.split('filename=')[1]
             ?.replaceAll('"', '');
 
@@ -63,7 +68,7 @@ class _OrderBodyState extends State<OrderBody> {
         }
       }
     } on DioError catch (_) {
-    null  ;
+      null  ;
       // showSnackbar("Network error: Unable to connect to cashier.")
     } catch (e) {
       showSnackbar("Error processing data: $e");
@@ -83,13 +88,37 @@ class _OrderBodyState extends State<OrderBody> {
 
     await dbHelper.insertHistoryOrder(historyOrder).then((_) {
       setState(() {
+
         orders.removeAt(index);
+
+        orders.add(order);
+
+        // تحديث العدادات باستخدام ValueNotifier حسب نوع الطلب
+        switch (order.type) {
+          case 0:
+            widget.dineInCount.value++;
+            break;
+          case 1:
+            widget.pickupCount.value++;
+            break;
+          case 2:
+            widget.deliveryCount.value++;
+            break;
+          case 3:
+            widget.driveThruCount.value++;
+            break;
+        }
       });
       showSnackbar("Order bumped and saved to history!");
     }).catchError((e) {
       showSnackbar("Error saving order to database: $e");
       print("Error saving order to database: $e");
     });
+
+
+
+
+
   }
 
 
@@ -196,12 +225,7 @@ class _OrderBodyState extends State<OrderBody> {
                   title: "Bump",
                   onPressed: () async {
                     await bumpOrder(index);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HistoryScreen(),
-                      ),
-                    );
+
                   },
                 ),
               ],

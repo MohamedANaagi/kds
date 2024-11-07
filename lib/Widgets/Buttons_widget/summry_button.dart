@@ -8,7 +8,12 @@ import '../number_title_row.dart';
 
 
 class SummryButton extends StatelessWidget {
-  const SummryButton({super.key});
+  final ValueNotifier<int> dineInCount;
+  final ValueNotifier<int> pickupCount;
+  final ValueNotifier<int> deliveryCount;
+  final ValueNotifier<int> driveThruCount;
+
+  const SummryButton({super.key, required this.dineInCount, required this.pickupCount, required this.deliveryCount, required this.driveThruCount});
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +56,9 @@ class SummryButton extends StatelessWidget {
                           Container(
                             color: Colors.grey.shade200,
                             height: MediaQuery.of(context).size.height *
-                                0.07,
+                                0.05,
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0,right: 10),
+                              padding: const EdgeInsets.only(bottom: 4.0,right: 10),
                               child: Align(
 
                                 alignment: Alignment.bottomRight,
@@ -72,7 +77,7 @@ class SummryButton extends StatelessWidget {
                           Container(
                             color: Colors.grey.shade200,
                             height: MediaQuery.of(context).size.height *
-                                0.07,
+                                0.04,
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 8.0,right: 10),
                               child: Align(
@@ -86,9 +91,22 @@ class SummryButton extends StatelessWidget {
                               ),
                             ),
                           ),
-                          NumberTitleRow(number: 0, title: "Dine in"),
-                          NumberTitleRow(number: 0, title: "Pick up"),
-                          NumberTitleRow(number: 0, title: "Delivery"),
+                          ValueListenableBuilder(
+                            valueListenable: dineInCount,
+                            builder: (context, value, child) => NumberTitleRow(number: value, title: "Dine in"),
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: pickupCount,
+                            builder: (context, value, child) => NumberTitleRow(number: value, title: "Pick up"),
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: deliveryCount,
+                            builder: (context, value, child) => NumberTitleRow(number: value, title: "Delivery"),
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: driveThruCount,
+                            builder: (context, value, child) => NumberTitleRow(number: value, title: "Drive Thru"),
+                          ),
 
                           // Spacer(),
                           CustomButton(

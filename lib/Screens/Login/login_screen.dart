@@ -82,7 +82,7 @@ class ActivationPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const MainScreen()),
+                    MaterialPageRoute(builder: (context) =>  MainScreen()),
                   );
 
                 },
