@@ -1,4 +1,5 @@
 import 'package:cashier_app/Colors/colors.dart';
+import 'package:cashier_app/features/presentation/screen/order_body.dart';
 import 'package:flutter/material.dart';
 
 import '../Widgets/buttons_row.dart';
@@ -26,7 +27,7 @@ class MainScreen extends StatelessWidget {
 
           ),
           SizedBox(height: 20,),
-          OrderBody(            dineInCount: dineInCount,
+          OrderBody2(            dineInCount: dineInCount,
             pickupCount: pickupCount,
             deliveryCount: deliveryCount,
             driveThruCount: driveThruCount,

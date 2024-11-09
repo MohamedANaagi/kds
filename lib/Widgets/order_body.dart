@@ -12,21 +12,28 @@ import '../models/history_model.dart';
 import '../models/orders.dart';
 
 class OrderBody extends StatefulWidget {
-
   final ValueNotifier<int> dineInCount;
   final ValueNotifier<int> pickupCount;
   final ValueNotifier<int> deliveryCount;
   final ValueNotifier<int> driveThruCount;
 
-  const OrderBody({Key? key, required this.dineInCount, required this.pickupCount, required this.deliveryCount, required this.driveThruCount}) : super(key: key);
+  const OrderBody({
+    Key? key,
+    required this.dineInCount,
+    required this.pickupCount,
+    required this.deliveryCount,
+    required this.driveThruCount,
+  }) : super(key: key);
+
   @override
   _OrderBodyState createState() => _OrderBodyState();
 }
 
 class _OrderBodyState extends State<OrderBody> {
   List<Order> orders = [];
+  List<int> deletedOrderIds = []; // قائمة للاحتفاظ بالطلبات المحذوفة
   final dio = Dio();
-  final String cashierIp = "192.168.1.203";
+  final String cashierIp = "192.168.1.5";
   Timer? timer;
   String? lastFileName;
   final DatabaseHelper dbHelper = DatabaseHelper();
@@ -60,18 +67,43 @@ class _OrderBodyState extends State<OrderBody> {
           lastFileName = newFileName;
 
           final Map<String, dynamic> jsonData = response.data;
+          final newOrder = Order.fromMap(jsonData);
 
-          setState(() {
-            orders.add(Order.fromMap(jsonData));
-          });
-          showSnackbar("Order added successfully!");
+          // التحقق من عدم إضافة الطلب إذا كان موجودًا في قائمة المحذوفات
+          if (!deletedOrderIds.contains(newOrder.id) &&
+              !orders.any((order) => order.id == newOrder.id)) {
+            setState(() {
+              orders.add(newOrder);
+            });
+            showSnackbar("Order added successfully!");
+
+            // تحديث العداد المناسب بناءً على نوع الطلب
+            updateCounter(newOrder.type, 1);
+          }
         }
       }
     } on DioError catch (_) {
-      null  ;
-      // showSnackbar("Network error: Unable to connect to cashier.")
+      showSnackbar("Network error: Unable to connect to cashier.");
     } catch (e) {
       showSnackbar("Error processing data: $e");
+    }
+  }
+
+  void updateCounter(int orderType, int delta) {
+    // تأكد من زيادة أو تقليل العدادات بطريقة صحيحة
+    switch (orderType) {
+      case 0:
+        widget.dineInCount.value += delta;
+        break;
+      case 1:
+        widget.pickupCount.value += delta;
+        break;
+      case 2:
+        widget.deliveryCount.value += delta;
+        break;
+      case 3:
+        widget.driveThruCount.value += delta;
+        break;
     }
   }
 
@@ -83,44 +115,23 @@ class _OrderBodyState extends State<OrderBody> {
       serial: order.serial,
       type: order.type,
       createdAt: order.createdAt.toIso8601String(),
-      orders: order.orders, // Pass List<OrderItem> directly
+      orders: order.orders,
     );
 
     await dbHelper.insertHistoryOrder(historyOrder).then((_) {
       setState(() {
-
-        orders.removeAt(index);
-
-        orders.add(order);
+        orders.removeAt(index); // إزالة الطلب من القائمة
+        deletedOrderIds.add(order.id); // إضافة الطلب إلى قائمة المحذوفات
 
         // تحديث العدادات باستخدام ValueNotifier حسب نوع الطلب
-        switch (order.type) {
-          case 0:
-            widget.dineInCount.value++;
-            break;
-          case 1:
-            widget.pickupCount.value++;
-            break;
-          case 2:
-            widget.deliveryCount.value++;
-            break;
-          case 3:
-            widget.driveThruCount.value++;
-            break;
-        }
+        updateCounter(order.type, -1);
       });
       showSnackbar("Order bumped and saved to history!");
     }).catchError((e) {
       showSnackbar("Error saving order to database: $e");
       print("Error saving order to database: $e");
     });
-
-
-
-
-
   }
-
 
   void showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -225,7 +236,6 @@ class _OrderBodyState extends State<OrderBody> {
                   title: "Bump",
                   onPressed: () async {
                     await bumpOrder(index);
-
                   },
                 ),
               ],

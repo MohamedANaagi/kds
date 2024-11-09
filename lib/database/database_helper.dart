@@ -7,16 +7,16 @@ import 'dart:convert';
 import '../models/orders.dart';
 
 class DatabaseHelper {
-  // Future<void> clearDatabase() async {
-  //   try {
-  //     final db = await database;
-  //     // حذف جميع البيانات من جدول history_orders
-  //     await db.delete('history_orders');
-  //     print("All data cleared from history_orders table.");
-  //   } catch (e) {
-  //     print("Error clearing data from database: $e");
-  //   }
-  // }
+  Future<void> clearDatabase() async {
+    try {
+      final db = await database;
+      // حذف جميع البيانات من جدول history_orders
+      await db.delete('history_orders');
+      print("All data cleared from history_orders table.");
+    } catch (e) {
+      print("Error clearing data from database: $e");
+    }
+  }
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
   static Database? _database;
