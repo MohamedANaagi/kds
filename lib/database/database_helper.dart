@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import '../models/history_model.dart';
+import 'package:cashier_app/features/history_feature/data/models/history_model.dart';
 import 'dart:convert';
 
-import '../models/orders.dart';
+import '../features/order_body/data/models/orders.dart';
 
 class DatabaseHelper {
   Future<void> clearDatabase() async {
@@ -20,6 +22,7 @@ class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
   static Database? _database;
+  final _orderStreamController = StreamController<List<HistoryModel>>.broadcast();
 
   DatabaseHelper._internal();
 
@@ -69,6 +72,9 @@ class DatabaseHelper {
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
+      final updatedOrders = await getHistoryOrders();
+      _orderStreamController.add(updatedOrders); // إرسال البيانات الجديدة
+
     } catch (e) {
       print("Error saving order to database: $e");
     }
@@ -85,11 +91,13 @@ class DatabaseHelper {
         type: maps[i]['type'],
         createdAt: maps[i]['createdAt'],
         orders: (jsonDecode(maps[i]['orders']) as List<dynamic>)
-            .map((item) => OrderItem.fromMap(item))
+            .map((item) => OrderItemModel.fromMap(item))
             .toList(),
       );
     });
   }
+  Stream<List<HistoryModel>> get orderStream => _orderStreamController.stream; // توفير stream للـ UI للاستماع للتحديثات
+
 }
 
 
