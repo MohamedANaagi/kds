@@ -31,7 +31,7 @@ class OrderService {
     print("All cashier IPs have been cleared.");
   }
 
-  // تحميل الطلبات من جميع الكاشير المسجلة
+  // تحميل الطلبات وتحديث حالة الكاشير
   Future<void> loadOrderFromCashier({
     required String? lastFileName,
     required List<int> deletedOrderIds,
@@ -47,6 +47,7 @@ class OrderService {
     required ValueNotifier<int> driveThruCount,
     required Function(OrderModel newOrder, String newFileName) onOrderAdded,
     required Function(String error) onError,
+    required Function(String ip, bool isConnected) onConnectionStatusChanged,
   }) async {
     await loadCashierIps(); // تحديث قائمة الكاشير
 
@@ -55,6 +56,8 @@ class OrderService {
         final response = await dio.get('http://$ip:8080/file');
 
         if (response.statusCode == 200 && response.data != null) {
+          onConnectionStatusChanged(ip, true); // تحديث حالة الاتصال إلى true
+
           final newFileName = response.headers['content-disposition']
               ?.firstWhere((header) => header.contains('filename='), orElse: () => '')
               ?.split('filename=')[1]
@@ -102,64 +105,11 @@ class OrderService {
           }
         }
       } on DioError catch (e) {
-        // onError("Network error: Unable to connect to cashier at IP $ip. Error: ${e.message}");
+        onConnectionStatusChanged(ip, false); // تعيين الحالة كـ غير متصل لو حدث خطأ
+        onError("Network error: Unable to connect to cashier at IP $ip. Error: ${e.message}");
       } catch (e) {
         onError("Error processing data from IP $ip: $e");
       }
-    }
-  }
-
-  // تقليل عدد الطلبات (bump order)
-  Future<void> bumpOrder(
-      OrderModel order,
-      ValueNotifier<int> pending,
-      ValueNotifier<int> changed,
-      ValueNotifier<int> cancelled,
-      ValueNotifier<int> delayed,
-      ValueNotifier<int> pending_changed,
-      ValueNotifier<int> dineInCount,
-      ValueNotifier<int> pickupCount,
-      ValueNotifier<int> deliveryCount,
-      ValueNotifier<int> driveThruCount, {
-        required VoidCallback onSuccess,
-        required Function(String error) onError,
-      }) async {
-    try {
-      // عملية لحفظ الطلب أو معالجة إضافية (يمكن تخصيصها)
-      onSuccess();
-
-      switch (order.type) {
-        case 0:
-          if (dineInCount.value > 0) dineInCount.value--;
-          break;
-        case 1:
-          if (pickupCount.value > 0) pickupCount.value--;
-          break;
-        case 2:
-          if (deliveryCount.value > 0) deliveryCount.value--;
-          break;
-        case 3:
-          if (driveThruCount.value > 0) driveThruCount.value--;
-          break;
-      }
-      switch(order.status){
-        case 0:
-          pending.value--;
-          break;
-        case 1:
-          changed.value--;
-          break;
-        case 2:
-          cancelled.value--;
-          break;
-        case 3:
-          delayed.value--;
-          break;
-        case 4:
-          pending_changed.value--;
-      }
-    } catch (e) {
-      onError("Error saving order to database: $e");
     }
   }
 }

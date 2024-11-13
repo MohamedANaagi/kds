@@ -1,8 +1,6 @@
 import 'package:cashier_app/Colors/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../features/order_body/presentation/widgets/order_services.dart';
 
 class DevicesPage extends StatefulWidget {
@@ -20,6 +18,7 @@ class _DevicesPageState extends State<DevicesPage> {
   void initState() {
     super.initState();
     loadCashierIps();
+    checkAllCashierStatuses(); // تحديث الحالة لكل IP عند بداية تشغيل الصفحة
   }
 
   Future<void> loadCashierIps() async {
@@ -36,22 +35,29 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 
   Future<void> checkAllCashierStatuses() async {
-    for (String ip in cashierIps) {
-      await _checkIpStatus(ip);
-    }
-  }
-
-  Future<void> _checkIpStatus(String ip) async {
-    try {
-      final response = await Dio().get('http://$ip:8080/status');
-      setState(() {
-        cashierStatus[ip] = response.statusCode == 200;
-      });
-    } catch (e) {
-      setState(() {
-        cashierStatus[ip] = false;
-      });
-    }
+    await orderService.loadOrderFromCashier(
+      lastFileName: null,
+      deletedOrderIds: [],
+      orders: [],
+      pending: ValueNotifier(0),
+      changed: ValueNotifier(0),
+      cancelled: ValueNotifier(0),
+      delayed: ValueNotifier(0),
+      pending_changed: ValueNotifier(0),
+      dineInCount: ValueNotifier(0),
+      pickupCount: ValueNotifier(0),
+      deliveryCount: ValueNotifier(0),
+      driveThruCount: ValueNotifier(0),
+      onOrderAdded: (order, fileName) {},
+      onError: (error) {
+        print(error);
+      },
+      onConnectionStatusChanged: (ip, isConnected) {
+        setState(() {
+          cashierStatus[ip] = isConnected;
+        });
+      },
+    );
   }
 
   void addCashier() async {
@@ -64,7 +70,7 @@ class _DevicesPageState extends State<DevicesPage> {
       await saveCashierIps();
       await orderService.addCashierIp(newIp);
       ipController.clear();
-      _checkIpStatus(newIp); // Check status immediately
+      checkAllCashierStatuses(); // Check statuses for all devices again
     }
   }
 
@@ -151,19 +157,41 @@ class _DevicesPageState extends State<DevicesPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                checkAllCashierStatuses(); // تحديث الحالة عند الضغط
+                              },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: cashierStatus[ip] == true ? Colors.green : Colors.white,
+                                backgroundColor: cashierStatus[ip] == true
+                                    ? Colors.green
+                                    : Colors.grey, // إذا متصل يكون أخضر، وإلا رمادي
                               ),
-                              child: Text('Online'),
+                              child: Text(
+                                'Online',
+                                style: TextStyle(
+                                  color: cashierStatus[ip] == true
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
                             ),
                             SizedBox(width: 8),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                checkAllCashierStatuses(); // تحديث الحالة عند الضغط
+                              },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: cashierStatus[ip] == true ? Colors.white : Colors.red,
+                                backgroundColor: cashierStatus[ip] == true
+                                    ? Colors.grey
+                                    : Colors.red, // لو مش متصل يكون أحمر، وإلا رمادي
                               ),
-                              child: Text('Ping'),
+                              child: Text(
+                                'Ping',
+                                style: TextStyle(
+                                  color: cashierStatus[ip] == true
+                                      ? Colors.black
+                                      : Colors.white,
+                                ),
+                              ),
                             ),
                           ],
                         ),

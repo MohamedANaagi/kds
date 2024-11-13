@@ -13,10 +13,10 @@ class OrderBody2 extends StatefulWidget {
   final ValueNotifier<int> deliveryCount;
   final ValueNotifier<int> driveThruCount;
   final ValueNotifier<int> allOrdersCounter;
-  final ValueNotifier<int> pendingCount ;
-  final ValueNotifier<int> changedCount ;
+  final ValueNotifier<int> pendingCount;
+  final ValueNotifier<int> changedCount;
   final ValueNotifier<int> cancelledCount;
-  final ValueNotifier<int> delayedCount ;
+  final ValueNotifier<int> delayedCount;
   final ValueNotifier<int> pendingChangedCount;
 
   const OrderBody2({
@@ -25,7 +25,12 @@ class OrderBody2 extends StatefulWidget {
     required this.pickupCount,
     required this.deliveryCount,
     required this.driveThruCount,
-    required this.allOrdersCounter, required this.pendingCount, required this.changedCount, required this.cancelledCount, required this.delayedCount, required this.pendingChangedCount,
+    required this.allOrdersCounter,
+    required this.pendingCount,
+    required this.changedCount,
+    required this.cancelledCount,
+    required this.delayedCount,
+    required this.pendingChangedCount,
   }) : super(key: key);
 
   @override
@@ -36,7 +41,7 @@ class _OrderBodyState extends State<OrderBody2> {
   List<OrderModel> orders = [];
   List<int> deletedOrderIds = [];
   final OrderService orderService = OrderService();
-  final dbHelper = DatabaseHelper(); // تأكد من تعريف dbHelper
+  final dbHelper = DatabaseHelper();
   Timer? timer;
   String? lastFileName;
 
@@ -47,7 +52,7 @@ class _OrderBodyState extends State<OrderBody2> {
   }
 
   void startPolling() {
-    timer = Timer.periodic(Duration(milliseconds: 20), (_) {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
       orderService.loadOrderFromCashier(
         lastFileName: lastFileName,
         deletedOrderIds: deletedOrderIds,
@@ -63,11 +68,16 @@ class _OrderBodyState extends State<OrderBody2> {
             lastFileName = fileName;
           });
         },
-        onError: showSnackbar, pending: widget.pendingCount,
+        onError: showSnackbar,
+        pending: widget.pendingCount,
         changed: widget.changedCount,
         cancelled: widget.cancelledCount,
-        delayed: widget.cancelledCount,
+        delayed: widget.delayedCount,
         pending_changed: widget.pendingChangedCount,
+        onConnectionStatusChanged: (ip, isConnected) {
+          // يمكنك استخدام هذا الجزء لإضافة منطق إضافي عند تغيير حالة الاتصال لكل IP
+          print('Connection status for $ip is ${isConnected ? 'connected' : 'disconnected'}');
+        },
       );
     });
   }
