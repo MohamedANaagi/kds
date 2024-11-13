@@ -29,7 +29,7 @@ class CustomIconButton extends StatelessWidget {
             Positioned(
               left: isallorder
                   ? offset.dx - 100
-                  : offset.dx - MediaQuery.of(context).size.width * 0.3,
+                  : offset.dx - MediaQuery.of(context).size.width * 0.2,
               top: offset.dy, // Place dialog directly under the button
               child: Material(
                 color: Colors.transparent,

@@ -1,8 +1,10 @@
 // import 'dart:async';
 // import 'dart:convert';
 // import 'package:cashier_app/Colors/colors.dart';
+// import 'package:cashier_app/Screens/history_test.dart';
 // import 'package:cashier_app/Widgets/custom_button.dart';
 // import 'package:cashier_app/Widgets/order_row.dart';
+// import 'package:cashier_app/features/order_body/data/models/orders.dart';
 // import 'package:flutter/material.dart';
 // import 'package:dio/dio.dart';
 //
@@ -29,7 +31,7 @@
 // }
 //
 // class _OrderBodyState extends State<OrderBody> {
-//   List<Order> orders = [];
+//   List<OrderModel> orders = [];
 //   List<int> deletedOrderIds = []; // قائمة للاحتفاظ بالطلبات المحذوفة
 //   final dio = Dio();
 //   final String cashierIp = "192.168.1.5";
@@ -66,7 +68,7 @@
 //           lastFileName = newFileName;
 //
 //           final Map<String, dynamic> jsonData = response.data;
-//           final newOrder = Order.fromMap(jsonData);
+//           final newOrder = OrderModel.fromMap(jsonData);
 //
 //           // التحقق من عدم إضافة الطلب إذا كان موجودًا في قائمة المحذوفات
 //           if (!deletedOrderIds.contains(newOrder.id) &&
@@ -221,7 +223,7 @@
 //                         shrinkWrap: true,
 //                         itemCount: order.orders.length,
 //                         itemBuilder: (context, productIndex) {
-//                           OrderItem orderItem = order.orders[productIndex];
+//                           Order orderItem = order.orders[productIndex];
 //                           Product product = orderItem.product;
 //                           return OrderRow(
 //                               number: productIndex + 1, title: product.name);
