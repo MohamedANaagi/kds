@@ -1,12 +1,14 @@
-import 'package:cashier_app/Colors/colors.dart';
-import 'package:cashier_app/Widgets/custom_Icon_button.dart';
-import 'package:cashier_app/Widgets/custom_button.dart';
-import 'package:cashier_app/Widgets/item_row.dart';
+
 import 'package:cashier_app/features/summary/presentaion/cubit/all_orders_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../Widgets/number_title_row.dart';
+
+import '../../../utlis/Widgets/custom_Icon_button.dart';
+import '../../../utlis/Widgets/custom_button.dart';
+import '../../../utlis/Widgets/item_row.dart';
+import '../../../utlis/Widgets/number_title_row.dart';
+import '../../../utlis/constant/Colors/colors.dart';
 class SummryButton extends StatelessWidget {
   final ValueNotifier<int> dineInCount;
   final ValueNotifier<int> pickupCount;

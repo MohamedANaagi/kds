@@ -1,9 +1,9 @@
-import 'package:cashier_app/Colors/colors.dart';
-import 'package:cashier_app/Widgets/custom_button.dart';
 import 'package:cashier_app/features/order_body/presentation/widgets/order_item_list.dart';
 import 'package:flutter/material.dart';
-import 'package:cashier_app/Widgets/item_row.dart';
 import 'package:cashier_app/features/order_body/data/models/orders.dart';
+
+import '../../../../utlis/Widgets/custom_button.dart';
+import '../../../../utlis/constant/Colors/colors.dart';
 
 class OrderCard extends StatelessWidget {
   final OrderModel order;

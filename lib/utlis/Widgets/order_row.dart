@@ -1,5 +1,6 @@
-import 'package:cashier_app/Colors/colors.dart';
 import 'package:flutter/material.dart';
+
+import '../constant/Colors/colors.dart';
 
 class OrderRow extends StatelessWidget {
   final int number;

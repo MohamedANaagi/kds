@@ -1,6 +1,8 @@
-import 'package:cashier_app/Widgets/custom_alert_Dialog.dart';
-import 'package:cashier_app/Widgets/custom_button.dart';
+
 import 'package:flutter/material.dart';
+
+import '../../../../utlis/Widgets/custom_alert_Dialog.dart';
+import '../../../../utlis/Widgets/custom_button.dart';
 
 class RecallButtonComponent extends StatelessWidget {
   const RecallButtonComponent({Key? key}) : super(key: key);

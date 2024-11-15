@@ -1,10 +1,11 @@
-import 'package:cashier_app/Colors/colors.dart';
 import 'package:cashier_app/features/main_screen/main_screen.dart';
 import 'package:flutter/material.dart';
 
 
 
 import 'package:flutter/material.dart';
+
+import '../../utlis/constant/Colors/colors.dart';
 
 class ActivationPage extends StatelessWidget {
   @override

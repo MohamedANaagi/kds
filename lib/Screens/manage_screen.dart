@@ -1,7 +1,8 @@
 
 import 'package:cashier_app/Screens/settings_screen.dart';
 import 'package:flutter/material.dart';
-import '../Colors/colors.dart';
+
+import '../utlis/constant/Colors/colors.dart';
 import 'Login/login_screen.dart';
 import 'devices_screen.dart';
 import 'diagnostics_screen.dart';

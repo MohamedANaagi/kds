@@ -1,9 +1,9 @@
-import 'package:cashier_app/Widgets/number_title_row.dart';
 import 'package:cashier_app/features/history_feature/presentation/componenets/order_status_card.dart';
 import 'package:cashier_app/features/history_feature/presentation/componenets/recall_button.dart';
 import 'package:cashier_app/features/history_feature/presentation/cubit/order_selection_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../utlis/Widgets/number_title_row.dart';
 import '../../data/models/history_model.dart';
 class OrderDetailsComponent extends StatelessWidget {
   final List<HistoryModel> historyOrders;

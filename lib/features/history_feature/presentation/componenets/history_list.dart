@@ -1,7 +1,7 @@
-import 'package:cashier_app/Widgets/history_item.dart';
 import 'package:cashier_app/features/history_feature/presentation/componenets/clear_al_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../utlis/Widgets/history_item.dart';
 import '../../data/models/history_model.dart';
 import '../cubit/order_selection_cubit.dart';
 

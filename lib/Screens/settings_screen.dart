@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../Colors/colors.dart';
+import '../utlis/constant/Colors/colors.dart';
+
 
 
 class SettingsPage extends StatefulWidget {

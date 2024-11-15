@@ -106,7 +106,7 @@ class OrderService {
         }
       } on DioError catch (e) {
         onConnectionStatusChanged(ip, false); // تعيين الحالة كـ غير متصل لو حدث خطأ
-        onError("Network error: Unable to connect to cashier at IP $ip. Error: ${e.message}");
+        // onError("Network error: Unable to connect to cashier at IP $ip. Error: ${e.message}");
       } catch (e) {
         onError("Error processing data from IP $ip: $e");
       }

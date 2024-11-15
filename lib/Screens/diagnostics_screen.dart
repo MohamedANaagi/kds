@@ -3,7 +3,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:io';
 
-import '../Colors/colors.dart';
+import '../utlis/constant/Colors/colors.dart';
+
 
 class DiagnosticsPage extends StatelessWidget {
   const DiagnosticsPage({super.key});

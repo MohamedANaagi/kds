@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cashier_app/Colors/colors.dart';
 import 'package:cashier_app/features/order_body/presentation/screen/order_body.dart';
 import 'buttons_row.dart';
 

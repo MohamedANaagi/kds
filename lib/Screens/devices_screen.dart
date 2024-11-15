@@ -1,7 +1,7 @@
-import 'package:cashier_app/Colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../features/order_body/presentation/widgets/order_services.dart';
+import '../utlis/constant/Colors/colors.dart';
 
 class DevicesPage extends StatefulWidget {
   @override
