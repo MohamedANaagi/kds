@@ -60,6 +60,37 @@ class DatabaseHelper {
       )
     ''');
   }
+  Future<void> insertAll(List<OrderModel> orders) async {
+    try {
+      final db = await database;
+      Batch batch = db.batch();
+      for (var order in orders) {
+        final historyOrder = HistoryModel(
+          id: order.id,
+          serial: order.serial,
+          type: order.type,
+          createdAt: order.createdAt.toIso8601String(),
+          orders: order.orders,
+        );
+
+        batch.insert(
+          'history_orders',
+          {
+            ...historyOrder.toMap(),
+            'orders': jsonEncode(historyOrder.orders.map((item) => item.toMap()).toList()),
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+      final updatedOrders = await getHistoryOrders();
+      _orderStreamController.add(updatedOrders); // إرسال البيانات الجديدة
+
+      await batch.commit(noResult: true);
+      print("All orders inserted successfully.");
+    } catch (e) {
+      print("Error inserting all orders: $e");
+    }
+  }
 
   Future<void> insertHistoryOrder(HistoryModel order) async {
     try {

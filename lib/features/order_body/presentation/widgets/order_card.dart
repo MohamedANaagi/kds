@@ -7,21 +7,13 @@ import 'package:cashier_app/features/order_body/data/models/orders.dart';
 
 class OrderCard extends StatelessWidget {
   final OrderModel order;
-  final ValueNotifier<int> dineInCount;
-  final ValueNotifier<int> pickupCount;
-  final ValueNotifier<int> deliveryCount;
-  final ValueNotifier<int> driveThruCount;
-  final ValueNotifier<int> allOrdersCounter; // استقبال الـ allOrdersCounter
+
   final VoidCallback onBump;
 
   const OrderCard({
     Key? key,
     required this.order,
-    required this.dineInCount,
-    required this.pickupCount,
-    required this.deliveryCount,
-    required this.driveThruCount,
-    required this.allOrdersCounter, // استقبال allOrdersCounter هنا
+
     required this.onBump,
   }) : super(key: key);
 
@@ -68,7 +60,6 @@ class OrderCard extends StatelessWidget {
           ),
           SizedBox(height: 10),
 CustomButton(title: "Bump", onPressed: onBump) ,         // عرض الـ allOrdersCounter في الواجهة إذا كان ذلك مطلوبًا
-          Text('All Orders: ${allOrdersCounter.value}'),
         ],
       ),
     );
