@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:cashier_app/database/database_helper.dart';
 import 'package:cashier_app/features/order_body/presentation/widgets/order_services.dart';
+import 'package:cashier_app/features/summary/presentaion/cubit/all_orders_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:cashier_app/features/order_body/data/models/orders.dart';
 import 'package:cashier_app/features/history_feature/data/models/history_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/order_card.dart';
 
@@ -49,6 +51,8 @@ class _OrderBodyState extends State<OrderBody2> {
   void initState() {
     super.initState();
     startPolling();
+    context.read<OrderCubit>().setOrders(orders);
+
   }
 
   void startPolling() {
@@ -81,6 +85,39 @@ class _OrderBodyState extends State<OrderBody2> {
       );
     });
   }
+  // Future<void> bumpAllOrders() async {
+  //   try {
+  //     final historyOrders = orders.map((order) => HistoryModel(
+  //       id: order.id,
+  //       serial: order.serial,
+  //       type: order.type,
+  //       createdAt: order.createdAt.toIso8601String(),
+  //       orders: order.orders,
+  //     )).toList();
+  //
+  //     await dbHelper.insertAll(orders).then((_){
+  //
+  //     setState(() {
+  //       orders.clear(); // مسح كل الطلبات من القائمة
+  //       widget.allOrdersCounter.value = 0; // إعادة تعيين العداد الشامل
+  //       widget.dineInCount.value = 0;
+  //       widget.pickupCount.value = 0;
+  //       widget.deliveryCount.value = 0;
+  //       widget.driveThruCount.value = 0;
+  //       widget.pendingCount.value = 0;
+  //       widget.deliveryCount.value = 0;
+  //       widget.delayedCount.value = 0;
+  //       widget.pendingChangedCount.value = 0;
+  //       widget.changedCount.value = 0;
+  //       widget.cancelledCount.value = 0;
+  //
+  //     });
+  //     });
+  //     showSnackbar("All orders bumped and saved to history!");
+  //   } catch (e) {
+  //     showSnackbar("Error saving orders to database: $e");
+  //   }
+  // }
 
   Future<void> bumpOrder(int index) async {
     final order = orders[index];
@@ -101,7 +138,7 @@ class _OrderBodyState extends State<OrderBody2> {
         deletedOrderIds.add(order.id); // إضافة الطلب إلى قائمة المحذوفات
 
         // تحديث العدادات حسب نوع الطلب
-        updateCounter(order.type.toString(), -1);
+        updateCounter(order.type, -1);
         widget.allOrdersCounter.value--; // تقليل العداد الشامل
       });
       showSnackbar("Order bumped and saved to history!");
@@ -111,18 +148,18 @@ class _OrderBodyState extends State<OrderBody2> {
     });
   }
 
-  void updateCounter(String orderType, int change) {
+  void updateCounter(int orderType, int change) {
     switch (orderType) {
-      case "Dine-In":
+      case 0:
         widget.dineInCount.value += change;
         break;
-      case "Pickup":
+      case 1:
         widget.pickupCount.value += change;
         break;
-      case "Delivery":
+      case 2:
         widget.deliveryCount.value += change;
         break;
-      case "Drive-Thru":
+      case 3:
         widget.driveThruCount.value += change;
         break;
     }
@@ -140,24 +177,28 @@ class _OrderBodyState extends State<OrderBody2> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: orders.length,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) {
-          return OrderCard(
-            order: orders[index],
-            dineInCount: widget.dineInCount,
-            pickupCount: widget.pickupCount,
-            deliveryCount: widget.deliveryCount,
-            driveThruCount: widget.driveThruCount,
-            allOrdersCounter: widget.allOrdersCounter,
-            onBump: () async => await bumpOrder(index),
-          );
-        },
-      ),
+    return Column(
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: orders.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return OrderCard(
+                order: orders[index],
+                onBump: () async => await bumpOrder(index),
+
+              );
+            },
+          ),
+        ),
+        // ElevatedButton(
+        //   onPressed: () async => await bumpAllOrders(),
+        //   child: Text("Bump All"),
+        // ),
+
+      ],
     );
-  }
-}
+  }}

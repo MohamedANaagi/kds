@@ -34,7 +34,12 @@ class ButtonsRow extends StatelessWidget {
             pickupCount: pickupCount,
             deliveryCount: deliveryCount,
             driveThruCount: driveThruCount,
-            allOrdersCounter: allOrdersCounter, // تمريره هنا
+            allOrdersCounter: allOrdersCounter,
+            pendingCount: pendingCount,
+            pendingChangedCount: pendingChangedCount,
+            cancelledCount: cancelledCount,
+            changedCount: changedCount,
+            delayedCount: delayedCount, // تمريره هنا
 
           ),
           const SizedBox(width: 10),

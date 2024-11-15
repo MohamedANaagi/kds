@@ -2,7 +2,9 @@ import 'package:cashier_app/Colors/colors.dart';
 import 'package:cashier_app/Widgets/custom_Icon_button.dart';
 import 'package:cashier_app/Widgets/custom_button.dart';
 import 'package:cashier_app/Widgets/item_row.dart';
+import 'package:cashier_app/features/summary/presentaion/cubit/all_orders_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../Widgets/number_title_row.dart';
 class SummryButton extends StatelessWidget {
@@ -11,9 +13,14 @@ class SummryButton extends StatelessWidget {
   final ValueNotifier<int> deliveryCount;
   final ValueNotifier<int> driveThruCount;
   final ValueNotifier<int> allOrdersCounter;
+  final ValueNotifier<int> pendingCount;
+  final ValueNotifier<int> pendingChangedCount;
+  final ValueNotifier<int> cancelledCount;
+  final ValueNotifier<int> changedCount;
+  final ValueNotifier<int> delayedCount;
 
 
-  const SummryButton({super.key, required this.dineInCount, required this.pickupCount, required this.deliveryCount, required this.driveThruCount, required this.allOrdersCounter});
+  const SummryButton({super.key, required this.dineInCount, required this.pickupCount, required this.deliveryCount, required this.driveThruCount, required this.allOrdersCounter, required this.pendingCount, required this.pendingChangedCount, required this.cancelledCount, required this.changedCount, required this.delayedCount});
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +121,20 @@ class SummryButton extends StatelessWidget {
                           CustomButton(
                               title: "Bump All",
                               onPressed: () {
+                                BlocProvider.of<OrderCubit>(context).bumpAllOrders(
+                                  allOrdersCounter: allOrdersCounter,
+                                  pendingCount: pendingCount,
+                                  pendingChangedCount: pendingChangedCount,
+                                  cancelledCount: cancelledCount,
+                                  changedCount: changedCount,
+                                  delayedCount: delayedCount,
+                                  showSnackbar: (message) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message))),
+                                  dineInCount: dineInCount,
+                                  pickupCount: pickupCount,
+                                  deliveryCount: deliveryCount,
+                                  driveThruCount: driveThruCount,
+                                );
+
                                 Navigator.pop(context);
                               })
                         ],
